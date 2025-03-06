@@ -1,0 +1,12 @@
+# .gitignore for Spring Boot projects
+.classpath
+.project
+.idea
+target/
+*.log
+*.classpath
+*.project
+*.iml
+*.jar
+*.war
+*.ear
