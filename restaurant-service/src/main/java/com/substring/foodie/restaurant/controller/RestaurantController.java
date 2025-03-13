@@ -43,10 +43,17 @@ public class RestaurantController {
         return restaurantService.getAllRestaurants();
     }
 
+    int counter=0;
     // Get restaurant by ID
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantDTO> getRestaurantById(@PathVariable String id) {
         Optional<RestaurantDTO> restaurantDTO = restaurantService.getById(id);
+        System.out.println("Retried...");
+        counter++;
+        if(counter<=3){
+            System.out.println("Retrying : " + counter);
+            throw new RuntimeException("Service down");
+        }
         return restaurantDTO.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

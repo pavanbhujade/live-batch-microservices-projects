@@ -29,8 +29,9 @@ public class FoodItemService {
 
     @Autowired
     private RestTemplate restTemplate;
+
     @Autowired
-    private RestaurantService restaurantService;
+    public RestaurantService restaurantService;
 
     @Autowired
     private RestWebClientService restWebClientService;
@@ -57,11 +58,11 @@ public class FoodItemService {
 
         //Using FeignClient
         //calling restaurant service to get restaurant by id
-//        RestaurantDTO restaurantDTO = restaurantService.getById(foodItem.getRestaurantId());
+        RestaurantDTO restaurantDTO = restaurantService.getById(foodItem.getRestaurantId());
 
         //Using WebClient
 
-        RestaurantDTO restaurantDTO = restWebClientService.getById(foodItem.getRestaurantId());
+//        RestaurantDTO restaurantDTO = restWebClientService.getById(foodItem.getRestaurantId());
 
         FoodItemDTO foodItemDTO = convertToDTO(foodItem);
         foodItemDTO.setRestaurant(restaurantDTO);
