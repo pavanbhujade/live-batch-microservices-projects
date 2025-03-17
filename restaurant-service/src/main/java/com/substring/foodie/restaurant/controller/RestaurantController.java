@@ -2,10 +2,12 @@ package com.substring.foodie.restaurant.controller;
 
 import com.substring.foodie.restaurant.dto.RestaurantDTO;
 import com.substring.foodie.restaurant.service.RestaurantService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,19 +40,21 @@ public class RestaurantController {
     }
 
     // Endpoint to get all restaurants
+    @RateLimiter(name = "get-all-restaurant-rate-limiter", fallbackMethod = "getAllFallBack")
     @GetMapping
     public List<RestaurantDTO> getAllRestaurants() {
         return restaurantService.getAllRestaurants();
     }
 
-    int counter=0;
+    int counter = 0;
+
     // Get restaurant by ID
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantDTO> getRestaurantById(@PathVariable String id) {
         Optional<RestaurantDTO> restaurantDTO = restaurantService.getById(id);
         System.out.println("Retried...");
         counter++;
-        if(counter<=3){
+        if (counter <= 3) {
             System.out.println("Retrying : " + counter);
             throw new RuntimeException("Service down");
         }
@@ -69,5 +73,11 @@ public class RestaurantController {
     public ResponseEntity<Void> deleteRestaurant(@PathVariable String id) {
         restaurantService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    //Fallback method
+    public List<RestaurantDTO> getAllFallBack(Throwable throwable) {
+        System.out.println(throwable.getMessage());
+        return Collections.emptyList();
     }
 }
